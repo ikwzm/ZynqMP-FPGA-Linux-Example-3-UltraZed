@@ -8,7 +8,10 @@ ZynqMP-FPGA-Linux Example (3) binary and test code for UltraZed-EG-IOCC
  * Board: UltraZed-EG-IOCC
  * OS: ZynqMP-FPGA-Linux ([https://github.com/ikwzm/ZynqMP-FPGA-Linux](https://github.com/ikwzm/ZynqMP-FPGA-Linux)) v2018.2
 
-# Boot UltraZed-EG-IOCC and login fpga user
+
+# Usage
+
+## Boot UltraZed-EG-IOCC and login fpga user
 
 fpga'password is "fpga".
 
@@ -18,9 +21,9 @@ Password:
 fpga@debian-fpga:~$
 ```
 
-# Download this repository
-
 ## Download this repository
+
+### Download this repository
 
 ```console
 fpga@debian-fpga:~$ mkdir examples
@@ -29,22 +32,22 @@ fpga@debian-fpga:~/examples$ git clone https://github.com/ikwzm/ZynqMP-FPGA-Linu
 fpga@debian-fpga:~/examples$ cd negative2
 ```
 
-# Setup
+## Setup
 
-## Copy boot.bin to boot partition and reboot
+### Copy boot.bin to boot partition and reboot
 
 ```console
 fpga@debian-fpga:~/examples/negative2$ sudo cp boot/boot.bin /mnt/boot/
 fpga@debian-fpga:~/examples/negative2$ sudo reboot
 ```
 
-## Copy FPGA Binary file to /lib/firmware
+### Copy FPGA Binary file to /lib/firmware
 
 ```console
 fpga@debian-fpga:~/examples/negative2$ sudo cp negative2.bin /lib/firmware
 ```
 
-## Configuration FPGA with Device Tree Overlay
+### Configuration FPGA with Device Tree Overlay
 
 ```console
 fpga@debian-fpga:~/examples/negative2$ dtc -I dts -O dtb -o fpga-load.dtb fpga-load.dts
@@ -53,7 +56,7 @@ fpga@debian-fpga:~/examples/negative2$ sudo cp fpga-load.dtb /config/device-tree
 [   56.218477] fpga_manager fpga0: writing negative2.bin to Xilinx ZynqMP FPGA Manager
 ```
 
-## Configuraiton PL Clock 0
+### Configuraiton PL Clock 0
 
 ```console
 fpga@debian-fpga:~/examples/negative2$ dtc -I dts -O dtb -o fclk0-zynqmp.dtb fclk0-zynqmp.dts
@@ -68,7 +71,7 @@ fpga@debian-fpga:~/examples/negative2$ sudo cp fclk0-zynqmp.dtb /config/device-t
 [  111.269125] fclkcfg amba:fclk0: remove enable  : 0
 ```
 
-## Install Uio and Udmabuf Device Tree
+### Install Uio and Udmabuf Device Tree
 
 ```console
 fpga@debian-fpga:~/examples/negative2$ dtc -I dts -O dtb -o negative2.dtb negative2.dts
@@ -92,7 +95,7 @@ fpga@debian-fpga:~/examples/negative2$ sudo cp negative2.dtb /config/device-tree
 [  164.205298] udmabuf amba_pl@0:negative-udmabuf5: driver installed.
 ```
 
-# Run negative2.py
+## Run negative2.py
 
 ```console
 fpga@debian-fpga:~/examples/negative$ sudo python3 negative.py
@@ -112,7 +115,7 @@ throughput          :148.187[MByte/sec]
 np.negative(udmabuf4) == udmabuf5 : OK
 ```
 
-# Clean up
+## Clean up
 
 ```console
 fpga@debian-fpga:~/examples/negative$ sudo rmdir /config/device-tree/overlays/negative2
@@ -127,37 +130,37 @@ fpga@debian-fpga:~/examples/negative$ sudo rmdir /config/device-tree/overlays/fc
 fpga@debian-fpga:~/examples/negative$ sudo rmdir /config/device-tree/overlays/fpga
 ```
 
-## Build Bitstream file
+# Build Bitstream file
 
-### Requirement
+## Requirement
 
 * Vivado 2017.2
 * Vivado-HLS 2017.2
 
-### Download this repository
+## Download this repository
 
 ```console
-shell$ git clone https://github.com/ikwzm/ZynqMP-FPGA-Linux-Example-2-UltraZed 
-shell$ cd ZynqMP-FPGA-Linux-Example-2-UltraZed 
+shell$ git clone https://github.com/ikwzm/ZynqMP-FPGA-Linux-Example-3-UltraZed 
+shell$ cd ZynqMP-FPGA-Linux-Example-3-UltraZed 
 shell$ git submodule init
 shell$ git submodule update
 ```
 
-### Run Vivado HLS
+## Run Vivado HLS
 
 ```console
 vivado% cd hls
 vivado% vivado_hls -f run_hls.tcl
 ```
 
-### Create Vivado Project
+## Create Vivado Project
 
 ```console
 vivado% cd project
 vivado% vivado -mode batch -source create_project.tcl
 ```
 
-### Build Bitstream file
+## Build Bitstream file
 
 ```console
 vivado% cd project
@@ -165,8 +168,31 @@ vivado% vivado -mode batch -source implementation.tcl
 vivado% cp project.runs/impl_1/design_1_wrapper.bit ../negative2.bit
 ```
 
-### Convert to Binary file from Bitstream file
+## Convert to Binary file from Bitstream file
 
 ```console
 vivado% bootgen -image negative2.bif -arch zynqmp -w -o negative2.bin
 ```
+
+# Build boot.bin
+
+## Download this repository
+
+```console
+shell$ git clone https://github.com/ikwzm/ZynqMP-FPGA-Linux-Example-3-UltraZed 
+shell$ cd ZynqMP-FPGA-Linux-Example-3-UltraZed/boot/
+```
+
+## Download ZynqMP-FPGA-Linux/target/UltraZed-EG-IOCC/build-v2018.2
+
+```console
+shell$ git clone https://github.com/ikwzm/ZynqMP-FPGA
+shell$ cp ZynqMP-FPGA-Linux/target/UltraZed-EG-IOCC/build-v2018.2/*.elf .
+```
+
+## Build boot.bin
+
+```console
+vivado% bootgen -arch zynqmp -image boot.bif -w -o boot.bin
+```
+
